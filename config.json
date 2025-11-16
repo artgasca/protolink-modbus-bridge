@@ -1,0 +1,29 @@
+{
+  "mqtt": {
+    "host": "TU_BROKER_IP_O_HOST",
+    "port": 1883,
+    "username": "TU_USER",
+    "password": "TU_PASS",
+    "client_id": "protolink-modbus-bridge-1",
+
+    "topic_in": "protolink/modbus/raw",
+    "topic_out": "protolink/modbus/json"
+  },
+
+  "modbus": {
+    "unit_ids": {
+      "1": "dispositivo_1"
+    },
+    "registers": [
+      {
+        "name": "ejemplo_registro",
+        "function": 3,
+        "address": 0,
+        "length": 2,
+        "datatype": "uint16",
+        "scale": 1.0,
+        "unit": "raw"
+      }
+    ]
+  }
+}
