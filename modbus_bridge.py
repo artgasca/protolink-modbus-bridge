@@ -1,3 +1,4 @@
+import os
 import json
 import binascii
 import time
@@ -19,11 +20,13 @@ def load_config(path: str = "config.json") -> dict:
 
 config = load_config()
 
-MQTT_HOST = config["mqtt"]["host"]
-MQTT_PORT = int(config["mqtt"].get("port", 1883))
-MQTT_USER = config["mqtt"].get("username") or None
-MQTT_PASS = config["mqtt"].get("password") or None
-MQTT_CLIENT_ID = config["mqtt"].get("client_id", "protolink-modbus-bridge")
+# Primero tomamos de config.json, pero las ENV mandan
+MQTT_HOST = os.getenv("MQTT_HOST", config["mqtt"].get("host", "mosquitto"))
+MQTT_PORT = int(os.getenv("MQTT_PORT", str(config["mqtt"].get("port", 1883))))
+MQTT_USER = os.getenv("MQTT_USER", config["mqtt"].get("username") or "")
+MQTT_PASS = os.getenv("MQTT_PASS", config["mqtt"].get("password") or "")
+MQTT_CLIENT_ID = os.getenv("MQTT_CLIENT_ID", config["mqtt"].get("client_id", "protolink-modbus-bridge"))
+
 
 TOPIC_IN = config["mqtt"]["topic_in"]
 TOPIC_OUT_TEMPLATE = config["mqtt"]["topic_out_template"]
@@ -260,8 +263,8 @@ def on_disconnect(client, userdata, rc):
 def main():
     client = mqtt.Client(client_id=MQTT_CLIENT_ID, clean_session=True)
 
-    if MQTT_USER is not None:
-        client.username_pw_set(MQTT_USER, MQTT_PASS)
+    if MQTT_USER:
+        client.username_pw_set(MQTT_USER, MQTT_PASS or None)
 
     client.on_connect = on_connect
     client.on_message = on_message

@@ -1,15 +1,16 @@
 {
-  "mqtt": {
-  "host": "lora.galio.dev",
-  "port": 1883,
-  "username": "galiomosquitto",
-  "password": "g4L10mqtt$.",
-  "client_id": "protolink-modbus-bridge-1",
 
-  "topic_in": "protolink/+/modbus/raw",
-  "topic_out_template": "protolink/{device_id}/modbus/json",
+    "mqtt": {
+    "host": "mosquitto",
+    "port": 1883,
+    "username": "",
+    "password": "",
+    "client_id": "protolink-modbus-bridge-1",
 
-  "device_id_topic_index": 1
+    "topic_in": "protolink/+/modbus/raw",
+    "topic_out_template": "protolink/{device_id}/modbus/json",
+
+    "device_id_topic_index": 1
 }
 ,
     "modbus": 
