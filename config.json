@@ -1,29 +1,103 @@
 {
   "mqtt": {
-    "host": "TU_BROKER_IP_O_HOST",
+    "host": "lora.galio.dev",
     "port": 1883,
-    "username": "TU_USER",
-    "password": "TU_PASS",
+    "username": "galiomosquitto",
+    "password": "g4L10mqtt$.",
     "client_id": "protolink-modbus-bridge-1",
 
     "topic_in": "protolink/modbus/raw",
     "topic_out": "protolink/modbus/json"
-  },
-
-  "modbus": {
-    "unit_ids": {
-      "1": "dispositivo_1"
     },
-    "registers": [
-      {
-        "name": "ejemplo_registro",
-        "function": 3,
-        "address": 0,
-        "length": 2,
-        "datatype": "uint16",
-        "scale": 1.0,
-        "unit": "raw"
-      }
-    ]
-  }
+    "modbus": 
+    {
+        "frame_type": "rtu",
+        "units": {
+            "1": {
+                "name": "protolink_demo",
+                "functions": {
+                    "3": {
+                        "registers_by_index": [
+                            {
+                                "index": 0,
+                                "name": "firmware",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 1,
+                                "name": "in0",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 2,
+                                "name": "in1",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 3,
+                                "name": "in2",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 4,
+                                "name": "in3",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 5,
+                                "name": "BTN",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 6,
+                                "name": "reg6_reserved",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 7,
+                                "name": "reg7_reserved",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 8,
+                                "name": "reg8_reserved",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 9,
+                                "name": "reg9_reserved",
+                                "datatype": "uint16",
+                                "scale": 1.0
+                            },
+                            {
+                                "index": 10,
+                                "name": "ch0_420",
+                                "datatype": "float32",
+                                "scale": 1.0,
+                                "word_order": "ABCD"
+                            },
+                            {
+                                "index": 12,
+                                "name": "ch1_420",
+                                "datatype": "float32",
+                                "scale": 1.0,
+                                "word_order": "ABCD"
+                            }
+                            
+                        ]
+                    }
+                }
+            }
+        }
+    }
 }
+
