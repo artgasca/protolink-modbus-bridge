@@ -26,11 +26,27 @@ MQTT_PASS = config["mqtt"].get("password") or None
 MQTT_CLIENT_ID = config["mqtt"].get("client_id", "protolink-modbus-bridge")
 
 TOPIC_IN = config["mqtt"]["topic_in"]
-TOPIC_OUT = config["mqtt"]["topic_out"]
+TOPIC_OUT_TEMPLATE = config["mqtt"]["topic_out_template"]
+DEVICE_ID_TOPIC_INDEX = int(config["mqtt"].get("device_id_topic_index", 1))
+
 
 MODBUS_CFG = config.get("modbus", {})
 FRAME_TYPE = MODBUS_CFG.get("frame_type", "rtu")  # por ahora solo rtu
 UNITS_CFG = MODBUS_CFG.get("units", {})
+
+
+
+# ========== Helpers MQTT ==========
+
+def extract_device_id_from_topic(topic: str) -> str | None:
+    """
+    Extrae el device_id del tópico MQTT usando el índice configurado.
+    Ejemplo: protolink/<device_id>/modbus/raw  con index=1
+    """
+    parts = topic.split("/")
+    if len(parts) > DEVICE_ID_TOPIC_INDEX:
+        return parts[DEVICE_ID_TOPIC_INDEX]
+    return None
 
 
 # ========== Helpers Modbus ==========
@@ -177,8 +193,11 @@ def on_message(client, userdata, msg):
     payload = msg.payload  # tipo bytes
     hex_payload = binascii.hexlify(payload).decode("ascii")
 
+    device_id = extract_device_id_from_topic(msg.topic)
+
     print("=" * 60)
     print(f"[MSG] Tópico: {msg.topic}")
+    print(f"[MSG] Device ID (topic): {device_id}")
     print(f"[MSG] Bytes recibidos: {len(payload)}")
     print(f"[MSG] HEX: {hex_payload}")
 
@@ -210,14 +229,26 @@ def on_message(client, userdata, msg):
         "raw_registers": regs
     }
 
+    if device_id is not None:
+        out_obj["device_id"] = device_id
+
     if mapped:
         out_obj["values"] = mapped
 
     out_json = json.dumps(out_obj)
     print(f"[OUT] JSON: {out_json}")
-    print(f"[PUB] -> {TOPIC_OUT}")
 
-    client.publish(TOPIC_OUT, out_json, qos=0, retain=False)
+    # Tópico de salida basado en device_id
+    if device_id is not None:
+        topic_out = TOPIC_OUT_TEMPLATE.format(device_id=device_id)
+    else:
+        # fallback por si no se pudo parsear: algo genérico
+        topic_out = TOPIC_OUT_TEMPLATE.format(device_id=f"unit_{unit_id}")
+
+    print(f"[PUB] -> {topic_out}")
+    client.publish(topic_out, out_json, qos=0, retain=False)
+
+  
 
 
 def on_disconnect(client, userdata, rc):
